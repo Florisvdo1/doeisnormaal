@@ -5,189 +5,202 @@
 <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no"/>
 <title>Emoji Day Planner</title>
 <style>
-html,body {
-  margin:0;padding:0;width:100%;height:100%;overflow:hidden;
+html, body {
+  margin:0; padding:0; width:100%; height:100%; overflow:hidden;
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:#90caf9;display:flex;flex-direction:column;
+  background:#BF8FFD; /* Pastel lilac background for the entire app */
+  display:flex; flex-direction:column;
 }
 
-/* PIXEL-ART STYLING AND THEME */
-/* The pixel-art style will be simulated using CSS: sharp corners, small sizes, and a retro palette. */
-/* We'll use a subtle pixelated effect by scaling the UI slightly and avoiding smooth borders. */
-body {
-  image-rendering: pixelated;
+/* We will use a simple scaling approach:
+   The app fills about 90% of the screen. We’ll use viewport units to ensure all fits nicely.
+   We'll arrange elements in a vertical stack with minimal gaps.
+*/
+
+/* COLORS & THEME:
+   Background: #BF8FFD (main bg)
+   Other pastel colors from reference image:
+   - Blue: #26C1FC
+   - Pink: #FF8AD1
+   - Orange: #FFB525
+   - Green: #8DD54F
+
+   We'll use white blocks with pastel borders and soft rounding for that modern pastel, friendly look.
+*/
+
+/* Basic Dimensions:
+   We'll create a vertical layout:
+   - Header bar (small)
+   - Start Box (modal on top initially)
+   - Day Segments (3 blocks)
+   - Homework button (block)
+   - Emoji deck (block)
+   
+   Each element arranged to fill most of the space in a neat grid.
+*/
+
+/* SHAPES & STYLES:
+   All elements are rounded blocks with uniform shapes and sizes.
+   We'll use rounded corners (border-radius) and pastel borders.
+   Minimal spacing, everything well-aligned.
+*/
+
+:root {
+  --border-radius: 12px;
+  --border-color: #8DD54F; /* Pastel green border */
+  --block-bg: #FFFFFF; /* White block background */
+  --text-color: #333333;
+  --arrow-color: #26C1FC; /* Blue arrows without background */
+  --accent-pink: #FF8AD1;
+  --accent-orange: #FFB525;
+  --accent-green: #8DD54F;
 }
 
+/* Layout Containers */
 #app {
-  position:relative;width:100%;height:100%;
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-  touch-action:none;overflow:hidden;
+  position:relative; width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  touch-action:none;
 }
 
-/* Clouds - Pixel Art Style */
-.cloudsContainer {
-  position:absolute;top:0;left:0;width:200%;height:200%;pointer-events:none;z-index:-1;opacity:0.3;overflow:hidden;
-}
-.cloud {
-  position:absolute;background:#ffffff;
-  border-radius:0; /* pixel art: no rounding */
-  width:20px;height:10px; /* small pixel-like clouds */
-}
-@keyframes moveLeft {0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
-@keyframes moveRight {0%{transform:translateX(-100%);}100%{transform:translateX(0);}}
-
-/* Header (Pixel Art) */
-.header {
-  width:100%;display:flex;align-items:center;justify-content:space-between;
-  padding:4px;box-sizing:border-box;background:#90caf9;
-  border-bottom:2px solid #0066cc; /* pixel-art style border */
-}
-.header-left { display:flex;flex-direction:column; }
-.header-title {
-  font-size:8px;font-weight:bold;color:#ffffff;
-  line-height:1;white-space:nowrap;letter-spacing:0px;
-  text-shadow:1px 1px #0066cc; /* pixel-ish shadow */
-}
-.timeDisplay {
-  color:#ffffff;font-weight:bold;font-size:8px;white-space:nowrap;
-}
-
-/* Top Layout */
-.topSection {
-  width:100%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;
-  padding:2px;box-sizing:border-box;position:relative;
-  background:#87CEEB; /* pixel sky */
-  border-top:2px solid #0066cc;
-}
-
-/* Day Segments in Pixel-Art Boxes */
-.segmentContainer {
-  width:95%;background:#ffffff;display:flex;align-items:center;justify-content:flex-start;padding:2px;gap:2px;
-  border:2px solid #0066cc; 
-  box-sizing:border-box;
-}
-.segmentTitle {
-  font-size:8px;font-weight:bold;color:#333;margin-right:2px;
-  white-space:nowrap;
-}
-.placeholders {
-  display:flex;flex-wrap:nowrap;gap:2px;align-items:center;justify-content:flex-start;
-  flex:1;min-height:10px;
-}
-.placeholder {
-  width:16px;height:16px;background:#89cfff;display:flex;align-items:center;justify-content:center;user-select:none;position:relative;
-  font-size:10px;line-height:1;
-  border:1px solid #0066cc;
-}
-.placeholder.glow {
-  outline:1px dashed #fff;transform:scale(1.1);
-}
-
-/* Add Placeholder Button (Pixel Style) */
-.addPlaceholderBtn {
-  width:16px;height:16px;background:#4caf50;color:#fff;border:none;cursor:pointer;font-size:12px;line-height:16px;
-  display:flex;align-items:center;justify-content:center;
-  border:1px solid #0066cc;
-}
-.addPlaceholderBtn:active { transform:translate(1px,1px); }
-
-/* Homework Button (Pixel Style) */
-.homeworkBtn {
-  width:95%;padding:2px;border:none;border:2px solid #0066cc;box-sizing:border-box;background:#ff5252;color:#ffffff;font-size:8px;cursor:pointer;margin:2px 0;
-  display:flex;align-items:center;justify-content:center;gap:2px;font-weight:bold;
-}
-.homeworkBtn.done {
-  background:#45d054;
-}
-.homeworkBtn:active { transform:translate(1px,1px); }
-
-/* Reset Button (Hidden by default) */
-.resetBtn {
-  position:absolute;top:2px;right:2px;background:#4caf50;color:#ffffff;border:none;padding:1px 2px;border:1px solid #0066cc;cursor:pointer;font-size:6px;line-height:1;
-  display:none;
-}
-.resetBtn:active { transform:translate(1px,1px); }
-
-/* Emoji Deck (Pixel style, no search) */
-.emojiDeckContainer {
-  width:100%;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-  position:relative;padding:2px;box-sizing:border-box;gap:2px;
-  background:#87CEEB; 
-  border-top:2px solid #0066cc;
-}
-
-.arrowsContainer {
-  width:95%;display:flex;align-items:center;justify-content:space-between;
-  padding:1px 0;
-}
-.arrowBtn {
-  border:none;cursor:pointer;font-size:8px;line-height:1;color:#ffffff;
-  background:none; /* no background color */
-  text-shadow:1px 1px #0066cc;
-}
-.arrowBtn:active { transform:translate(1px,1px); }
-
-.categoryLabel {
-  font-size:8px;color:#ffffff;font-weight:bold;
-  white-space:nowrap;text-shadow:1px 1px #0066cc;
-}
-
-.emoji-grid {
-  width:95%;display:grid;grid-template-columns:repeat(auto-fit, minmax(16px,1fr));
-  grid-auto-rows:16px;gap:2px;justify-items:center;align-items:center;
-  border:2px solid #0066cc; background:#ffffff;
-  padding:2px;box-sizing:border-box;
-}
-.emojiItem {
-  width:100%;height:100%;background:#89cfff;display:flex;align-items:center;justify-content:center;
-  user-select:none;font-size:10px;cursor:pointer;touch-action:none;
-  border:1px solid #0066cc;
-}
-
-/* Tutorial and Start Box */
-#tutorialOverlay {
-  position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);color:#ffffff;
-  display:none;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;z-index:999;
-}
-.tutorialContent {
-  background:#ffffff;padding:4px;border:2px solid #0066cc;max-width:90%;width:100px;color:#333;text-align:center;font-size:8px;
-}
-.tutorialButton {
-  background:#4caf50;color:#ffffff;padding:1px 2px;border:1px solid #0066cc;cursor:pointer;font-size:8px;font-weight:bold;margin-top:2px;display:inline-block;
-}
-.tutorialButton:active { transform:translate(1px,1px); }
-
-/* Start Box for "Ready" */
+/* Start Box Modal */
 #startBox {
-  position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.5);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  z-index:1000;
 }
 .startContent {
-  background:#ffffff;padding:4px;border:2px solid #0066cc;width:120px;color:#333;text-align:center;font-size:8px;
+  background:var(--block-bg); padding:1rem;
+  border:2px solid var(--border-color); border-radius:var(--border-radius);
+  width:70%; max-width:300px; text-align:center; color:var(--text-color); font-size:0.9rem;
 }
 .startButton {
-  background:#4caf50;color:#ffffff;padding:1px 2px;border:1px solid #0066cc;cursor:pointer;font-size:8px;font-weight:bold;margin-top:2px;display:inline-block;
+  display:inline-block; margin-top:0.5rem; padding:0.3rem 1rem;
+  background:var(--accent-green); color:#fff; border:none; border-radius:var(--border-radius); cursor:pointer;
+  font-weight:bold; font-size:0.9rem;
 }
-.startButton:active { transform:translate(1px,1px); }
+.startButton:active { transform:scale(0.95); }
 
-/* Ghost Tutorial Scenes */
+/* Header */
+.header {
+  width:90%; flex:0 0 auto; margin-top:1.5vh; display:flex; align-items:center; justify-content:space-between;
+  color:#fff; font-size:1rem; font-weight:bold;
+}
+.header-title {
+  font-size:1rem; color:#fff;
+}
+.timeDisplay {
+  font-size:0.9rem; color:#fff;
+}
+
+/* No reset button visible at start (as per instructions) */
+.resetBtn {
+  display:none;
+}
+
+/* Day Segments Container:
+   We'll stack Morning, Midday, Evening vertically, each as a block.
+*/
+.segmentsContainer {
+  flex:1; width:90%; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly;
+  margin-top:1vh; margin-bottom:1vh;
+}
+.segmentBlock {
+  width:100%; display:flex; align-items:center; justify-content:space-between;
+  background:var(--block-bg); border:2px solid var(--border-color); border-radius:var(--border-radius);
+  padding:0.5rem; box-sizing:border-box;
+}
+.segmentTitle {
+  font-size:0.9rem; font-weight:bold; color:var(--text-color); white-space:nowrap; margin-right:0.5rem;
+}
+.placeholders {
+  flex:1; display:flex; align-items:center; justify-content:flex-start; gap:0.5rem; margin:0 0.5rem;
+}
+.placeholder {
+  width:2rem; height:2rem; background:#FF8AD1; display:flex; align-items:center; justify-content:center;
+  border-radius:var(--border-radius); border:2px solid var(--border-color); font-size:1.2rem; color:#fff;
+  user-select:none; position:relative;
+}
+.placeholder.glow {
+  box-shadow:0 0 5px #fff;
+}
+.addPlaceholderBtn {
+  width:2rem; height:2rem; background:var(--accent-green); color:#fff; border:none; border-radius:var(--border-radius);
+  display:flex; align-items:center; justify-content:center; font-size:1.2rem; font-weight:bold; cursor:pointer;
+}
+.addPlaceholderBtn:active { transform:scale(0.95); }
+
+/* Homework Button block */
+.homeworkBtn {
+  width:90%; flex:0 0 auto; background:var(--accent-orange); border:2px solid var(--border-color);
+  border-radius:var(--border-radius); color:#fff; font-weight:bold; font-size:1rem; display:flex; align-items:center; justify-content:center;
+  padding:0.5rem; margin-bottom:1vh; cursor:pointer;
+}
+.homeworkBtn:active { transform:scale(0.95); }
+
+/* Emoji Deck:
+   No search bar. Just arrows and a deck of emojis in a block.
+*/
+.emojiDeckContainer {
+  width:90%; flex:0 0 auto; background:var(--block-bg); border:2px solid var(--border-color); border-radius:var(--border-radius);
+  display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; padding:0.5rem; box-sizing:border-box;
+  margin-bottom:1vh;
+}
+.arrowsContainer {
+  width:100%; display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:0.5rem;
+}
+.arrowBtn {
+  background:none; border:none; color:var(--arrow-color); font-size:1.2rem; cursor:pointer; font-weight:bold;
+}
+.arrowBtn:active { transform:scale(0.9); }
+.categoryLabel {
+  font-size:0.9rem; font-weight:bold; color:var(--text-color);
+}
+.emoji-grid {
+  width:100%; display:grid; grid-template-columns:repeat(auto-fit, minmax(2rem,1fr));
+  grid-auto-rows:2rem; gap:0.5rem; justify-items:center; align-items:center;
+}
+.emojiItem {
+  width:2rem; height:2rem; background:#FF8AD1; border:2px solid var(--border-color); border-radius:var(--border-radius);
+  display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#fff; cursor:pointer; user-select:none;
+}
+
+/* Tutorial Overlay (after 12s scene) */
+#tutorialOverlay {
+  position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);
+  display:none; flex-direction:column; align-items:center; justify-content:center; z-index:999;
+  padding:1rem; box-sizing:border-box;
+}
+.tutorialContent {
+  background:var(--block-bg); border:2px solid var(--border-color); border-radius:var(--border-radius);
+  padding:1rem; text-align:center; color:var(--text-color); font-size:0.9rem; max-width:80%; width:200px;
+}
+.tutorialButton {
+  background:var(--accent-green); color:#fff; border:none; border-radius:var(--border-radius); padding:0.3rem 0.8rem; font-weight:bold; font-size:0.9rem; cursor:pointer; margin-top:0.5rem;
+}
+.tutorialButton:active { transform:scale(0.95); }
+
+/* Ghost Scene for the 12s tutorial */
 .ghostScene {
-  position:absolute;top:0;left:0;width:100%;height:100%;z-index:1100;pointer-events:none;
-  display:none;flex-direction:column;align-items:center;justify-content:center;
+  position:absolute; top:0; left:0; width:100%; height:100%; z-index:1100; pointer-events:none;
+  display:none; flex-direction:column; align-items:center; justify-content:center;
 }
 .ghost {
-  width:20px;height:20px;background:#fff;border:1px solid #333;display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;
-  position:absolute;transition:transform 0.3s;
+  width:2rem; height:2rem; background:#FF8AD1; border:2px solid var(--border-color); border-radius:var(--border-radius);
+  display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#fff;
+  position:absolute; transition:transform 0.3s;
 }
 
 /* Confetti */
 .confetti-container {
-  pointer-events:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;z-index:998;
+  pointer-events:none; position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; z-index:998;
 }
 .confetti {
-  position:absolute;width:3px;height:3px;background:#ff0;animation:fall 3s linear infinite;
+  position:absolute; width:4px; height:4px; background:#ff0;
+  animation:fall 3s linear infinite;
 }
-
 @keyframes fall {
   0%{opacity:1;transform:translateY(-10px);}
   100%{opacity:0;transform:translateY(100vh);}
@@ -202,40 +215,49 @@ body {
 </head>
 <body>
 <div id="app">
-  <div class="cloudsContainer" id="clouds"></div>
-  <div class="header">
-    <div class="header-left">
-      <div class="header-title">Emoji Day Planner</div>
+  <div id="clouds"></div>
+  
+  <div id="startBox">
+    <div class="startContent">
+      Welcome to the Emoji Day Planner!<br>
+      Arrange your day with fun emojis.<br>
+      Press "Ready" to see a special 12s demo!
+      <button class="startButton" id="start-ready">Ready</button>
     </div>
+  </div>
+  
+  <div class="header">
+    <div class="header-title">Emoji Day Planner</div>
     <div class="timeDisplay" id="time-display">00:00</div>
   </div>
 
-  <button class="resetBtn" id="reset-all" aria-label="Reset All" style="display:none;">Reset</button>
+  <button class="resetBtn" id="reset-all">Reset</button>
 
-  <div class="topSection">
-    <div class="segmentContainer" data-segment="Morning">
+  <div class="segmentsContainer">
+    <div class="segmentBlock" data-segment="Morning">
       <div class="segmentTitle">Morning</div>
       <div class="placeholders" data-segment="Morning"></div>
       <button class="addPlaceholderBtn" data-segment="Morning">+</button>
     </div>
-    <div class="segmentContainer" data-segment="Midday">
+    <div class="segmentBlock" data-segment="Midday">
       <div class="segmentTitle">Midday</div>
       <div class="placeholders" data-segment="Midday"></div>
       <button class="addPlaceholderBtn" data-segment="Midday">+</button>
     </div>
-    <div class="segmentContainer" data-segment="Evening">
+    <div class="segmentBlock" data-segment="Evening">
       <div class="segmentTitle">Evening</div>
       <div class="placeholders" data-segment="Evening"></div>
       <button class="addPlaceholderBtn" data-segment="Evening">+</button>
     </div>
-    <button class="homeworkBtn" id="homework-btn" aria-label="Homework Toggle">Homework</button>
   </div>
+
+  <button class="homeworkBtn" id="homework-btn">Homework</button>
 
   <div class="emojiDeckContainer">
     <div class="arrowsContainer">
-      <button class="arrowBtn" id="left-arrow" aria-label="Previous Category">◀️</button>
+      <button class="arrowBtn" id="left-arrow">◀️</button>
       <div class="categoryLabel" id="category-label">Category 1/6</div>
-      <button class="arrowBtn" id="right-arrow" aria-label="Next Category">▶️</button>
+      <button class="arrowBtn" id="right-arrow">▶️</button>
     </div>
     <div id="emoji-deck" class="emoji-grid"></div>
   </div>
@@ -244,35 +266,34 @@ body {
 
   <div id="tutorialOverlay">
     <div class="tutorialContent" id="tutorialContent">
-      <!-- This will be used after the 12-second auto tutorial -->
-      <div>👻 Drag & Drop, Double-tap to remove, + to add, Homework = Confetti!</div>
+      🎉 Drag & Drop emojis into placeholders<br>
+      Double-tap to remove<br>
+      Use "+" to add more<br>
+      "Homework" for fun!<br>
       <button class="tutorialButton" id="tutorial-close">Got it!</button>
     </div>
   </div>
 
-  <div id="startBox">
-    <div class="startContent">
-      Welcome to the Emoji Day Planner!  
-      <br>Arrange your day with fun emojis.
-      <br>Tap "Ready" to see a special 12s live ghost demo!
-      <button class="startButton" id="start-ready">Ready</button>
-    </div>
-  </div>
-
-  <!-- Ghost Scene for 12s tutorial -->
   <div class="ghostScene" id="ghostScene">
-    <!-- The ghost and animation steps will be handled by JS -->
     <div class="ghost" id="ghostElem">👻</div>
   </div>
 </div>
-
 <script>
 (function(){
-  /* Implementing all requirements */
+  /* Final Implementation with all integrations:
+     - Pastel solid modern design
+     - Native-feel drag and drop (ios-like)
+     - Unified block shapes
+     - No search bar
+     - 12s tutorial with ghost
+     - Only 1 placeholder per segment at start
+     - Homework toggle confetti & wubble animation
+     - Magnet effect near placeholders
+     - Fits into viewport cleanly
+  */
 
   /* Data Setup */
-  // Replace initial "events" with more day-to-day activity emojis: walking, yoga, dinner, swimming, etc.
-  // We'll just pick some emojis close to that theme:
+  // "events" with daily activities
   const eventsSet = [
     {char:"🚶‍♂️",name:"walking"},{char:"🧘‍♀️",name:"yoga"},{char:"🍽️",name:"dinner"},{char:"🏊‍♂️",name:"swimming"},{char:"🚴‍♂️",name:"cycling"}
   ];
@@ -304,11 +325,8 @@ body {
 
   let currentCategoryIndex=0;
   let currentDeck=[];
-  let searchTerm="";
   let homeworkActive=false;
   let tutorialActive=false; // after 12s scene
-  let tutorialShown=false;
-
   let placeholdersData={
     "Morning":[{char:null}],
     "Midday":[{char:null}],
@@ -316,17 +334,15 @@ body {
   };
 
   const timeDisplay=document.getElementById('time-display');
-  const resetAllBtn=document.getElementById('reset-all');
   const homeworkBtn=document.getElementById('homework-btn');
   const leftArrow=document.getElementById('left-arrow');
   const rightArrow=document.getElementById('right-arrow');
   const categoryLabel=document.getElementById('category-label');
   const emojiDeck=document.getElementById('emoji-deck');
+  const confettiContainer=document.getElementById('confetti');
+  const startBox=document.getElementById('start-ready');
   const tutorialOverlay=document.getElementById('tutorialOverlay');
   const tutorialClose=document.getElementById('tutorial-close');
-  const confettiContainer=document.getElementById('confetti');
-  const startBox=document.getElementById('startBox');
-  const startReady=document.getElementById('start-ready');
   const ghostScene=document.getElementById('ghostScene');
   const ghostElem=document.getElementById('ghostElem');
 
@@ -348,19 +364,15 @@ body {
 
   function renderDeck(){
     emojiDeck.innerHTML="";
-    // searchTerm removed - no search
-    const filtered=currentDeck; // no filtering now
-    filtered.forEach((em)=>{
+    currentDeck.forEach(em=>{
       const div=document.createElement('div');
       div.className='emojiItem';
       div.textContent=em.char;
-      div.setAttribute('data-name',em.name);
       div.addEventListener('touchstart',onEmojiTouchStart,{passive:false});
       emojiDeck.appendChild(div);
     });
   }
 
-  /* Advanced Drag & Drop with Scaling, Magnet, and Pseudo-Haptics */
   let draggingEmoji=null;
   let dragOffsetX=0;
   let dragOffsetY=0;
@@ -371,23 +383,20 @@ body {
     if(e.touches.length>1)return;
     const target=e.currentTarget;
     draggingEmoji=target.cloneNode(true);
-    // Enlarge and style
+    // Native-feel drag: enlarge under finger
     draggingEmoji.style.position='fixed';
     draggingEmoji.style.zIndex='1000';
-    draggingEmoji.style.left=(e.touches[0].clientX -8)+'px';
-    draggingEmoji.style.top=(e.touches[0].clientY -8)+'px';
+    draggingEmoji.style.left=(e.touches[0].clientX -16)+'px';
+    draggingEmoji.style.top=(e.touches[0].clientY -16)+'px';
     draggingEmoji.style.transition='none';
-    draggingEmoji.style.transform='scale(1.5)'; // enlarge under finger
-    draggingEmoji.style.border='2px solid #fff';
-    draggingEmoji.style.boxShadow='0 0 4px #000';
+    draggingEmoji.style.transform='scale(1.2)';
+    draggingEmoji.style.boxShadow='0 0 8px rgba(0,0,0,0.2)';
     dragStartX=e.touches[0].clientX;
     dragStartY=e.touches[0].clientY;
     dragOffsetX = e.touches[0].clientX - parseInt(draggingEmoji.style.left);
     dragOffsetY = e.touches[0].clientY - parseInt(draggingEmoji.style.top);
     document.body.appendChild(draggingEmoji);
 
-    // Simulate haptic feedback (not possible in code, but we trust iOS or we can just mention it)
-    // In real iOS PWA: navigator.vibrate(10); 
     document.addEventListener('touchmove',onEmojiTouchMove,{passive:false});
     document.addEventListener('touchend',onEmojiTouchEnd,{passive:false});
     e.preventDefault();
@@ -408,7 +417,7 @@ body {
     const x=parseInt(draggingEmoji.style.left);
     const y=parseInt(draggingEmoji.style.top);
     if(!dropEmojiInPlaceholder(x,y)){
-      // animate return
+      // Animate return
       draggingEmoji.style.transition='transform 0.2s, left 0.2s, top 0.2s';
       draggingEmoji.style.transform='scale(1)';
       draggingEmoji.style.left=dragStartX+'px';
@@ -429,8 +438,8 @@ body {
       ph.classList.remove('glow');
       if(draggingEmoji&&dragging){
         const rect=ph.getBoundingClientRect();
-        const dist=Math.hypot((rect.x+rect.width/2)-(x+8),(rect.y+rect.height/2)-(y+8));
-        if(dist<30) ph.classList.add('glow');
+        const dist=Math.hypot((rect.x+rect.width/2)-(x+16),(rect.y+rect.height/2)-(y+16));
+        if(dist<40) ph.classList.add('glow');
       }
       if(clear) ph.classList.remove('glow');
     });
@@ -440,14 +449,13 @@ body {
     const allPh=document.querySelectorAll('.placeholder');
     for(let ph of allPh){
       const rect=ph.getBoundingClientRect();
-      const dist=Math.hypot((rect.x+rect.width/2)-(x+8),(rect.y+rect.height/2)-(y+8));
-      if(dist<30){
+      const dist=Math.hypot((rect.x+rect.width/2)-(x+16),(rect.y+rect.height/2)-(y+16));
+      if(dist<40){
         const seg=ph.parentElement.getAttribute('data-segment');
         const idx=parseInt(ph.getAttribute('data-index'));
         const emoji=draggingEmoji.textContent;
         placeholdersData[seg][idx].char=emoji;
         renderPlaceholders();
-        // On drop animate it nicely
         return true;
       }
     }
@@ -514,16 +522,11 @@ body {
   function toggleHomework(){
     homeworkActive=!homeworkActive;
     if(homeworkActive){
-      homeworkBtn.classList.add('done');
       homeworkBtn.textContent="Homework 👍";
-      // Wubble animation once
       homeworkBtn.style.animation='wubble 0.5s ease';
-      setTimeout(()=>{
-        homeworkBtn.style.animation='none';
-      },500);
+      setTimeout(()=>{ homeworkBtn.style.animation='none'; },500);
       launchConfetti();
     } else {
-      homeworkBtn.classList.remove('done');
       homeworkBtn.textContent="Homework";
     }
   }
@@ -541,16 +544,18 @@ body {
   }
 
   function createClouds(){
+    // Soft pastel design: let's skip complex clouds, or just small white rectangles:
     const container=document.getElementById('clouds');
-    for(let i=0;i<10;i++){
+    for(let i=0;i<5;i++){
       const c=document.createElement('div');
-      c.className='cloud';
-      const size=(20+Math.random()*10);
-      c.style.width=size+"px";
-      c.style.height=(size/2)+"px";
-      c.style.top=(Math.random()*200)+"px";
-      c.style.left=(Math.random()*200)+"px";
-      c.style.opacity=(0.3+Math.random()*0.7);
+      c.style.position='absolute';
+      c.style.width='20px';
+      c.style.height='10px';
+      c.style.background='#fff';
+      c.style.opacity='0.6';
+      c.style.top=(Math.random()*50)+'%';
+      c.style.left=(Math.random()*100)+'%';
+      c.style.borderRadius='5px';
       c.style.animation=(i%2===0)?"moveLeft 30s linear infinite":"moveRight 40s linear infinite";
       container.appendChild(c);
     }
@@ -563,57 +568,43 @@ body {
   leftArrow.addEventListener('click',()=>switchCategory(-1));
   rightArrow.addEventListener('click',()=>switchCategory(1));
   homeworkBtn.addEventListener('click',toggleHomework);
-
   tutorialClose.addEventListener('click',()=>{
     tutorialOverlay.style.display='none';
     tutorialActive=true;
   });
 
-  // Start box ready button -> triggers 12s ghost tutorial scene
-  startReady.addEventListener('click',()=>{
-    startBox.style.display='none';
+  startBox.addEventListener('click',()=>{
+    document.getElementById('startBox').style.display='none';
     runGhostTutorial();
   });
 
   function runGhostTutorial(){
     ghostScene.style.display='flex';
-    // The ghost will perform a sequence of actions over 12s:
-    // Timeline (approx):
-    // 0-2s: Ghost appears near emoji deck.
-    // 2-5s: Ghost picks an emoji (simulate drag), moves it to Morning placeholder.
-    // 5-7s: Ghost toggles Homework.
-    // 7-9s: Ghost taps + on Midday.
-    // 9-12s: Ghost ends tutorial, disappears, show tutorialOverlay with instructions.
-
-    let morningPl = document.querySelector('.placeholders[data-segment="Morning"] .placeholder');
+    // The ghost demonstrates features over 12s
     let deckRect=emojiDeck.getBoundingClientRect();
+    let morningPl = document.querySelector('.placeholders[data-segment="Morning"] .placeholder');
     let morningRect=morningPl.getBoundingClientRect();
 
-    ghostElem.style.left=(deckRect.left+deckRect.width/2 -10)+'px';
-    ghostElem.style.top=(deckRect.top+deckRect.height/2 -10)+'px';
+    ghostElem.style.left=(deckRect.left+deckRect.width/2 -16)+'px';
+    ghostElem.style.top=(deckRect.top+deckRect.height/2 -16)+'px';
 
     setTimeout(()=>{
-      // Move ghost to emoji deck top-left item
       let firstEmoji = emojiDeck.querySelector('.emojiItem');
       if(firstEmoji){
         let feRect=firstEmoji.getBoundingClientRect();
-        ghostElem.style.transform=`translate(${feRect.left-(deckRect.left+deckRect.width/2)+10}px,${feRect.top-(deckRect.top+deckRect.height/2)+10}px)`;
+        ghostElem.style.transform=`translate(${feRect.left-(deckRect.left+deckRect.width/2)}px,${feRect.top-(deckRect.top+deckRect.height/2)}px)`;
       }
     },2000);
 
     setTimeout(()=>{
-      // Move ghost towards Morning placeholder
       ghostElem.style.transform=`translate(${morningRect.left-(deckRect.left+deckRect.width/2)}px,${morningRect.top-(deckRect.top+deckRect.height/2)}px)`;
     },5000);
 
     setTimeout(()=>{
-      // Homework toggle
-      ghostElem.style.transform='translate(0,0)'; // back to center maybe or near homework button
       homeworkBtn.click();
     },7000);
 
     setTimeout(()=>{
-      // Add placeholder in Midday
       let middayPlus=document.querySelector('.addPlaceholderBtn[data-segment="Midday"]');
       let mpRect=middayPlus.getBoundingClientRect();
       ghostElem.style.transform=`translate(${mpRect.left-(deckRect.left+deckRect.width/2)}px,${mpRect.top-(deckRect.top+deckRect.height/2)}px)`;
